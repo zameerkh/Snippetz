@@ -72,3 +72,14 @@ export const getGistById = async (gistId) => {
     throw error;
   }
 };
+
+// Delete a single gist by ID
+export const deleteGist = async (gistId) => {
+  try {
+    await api.delete(`/gists/${gistId}`);
+    console.log(`Gist ${gistId} deleted successfully`);
+  } catch (error) {
+    console.error(`Error deleting gist ${gistId}:`, error);
+    throw error;
+  }
+};
