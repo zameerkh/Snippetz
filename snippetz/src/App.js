@@ -18,10 +18,14 @@ function App() {
 
   // Function to trigger refresh in SearchGist after creating or deleting a gist
   const refreshGists = () => {
+    console.log('Refreshing gists...');
     if (searchGistRef.current) {
+      console.log('Refreshing gists going to refresh...');
       searchGistRef.current.fetchGists(); // Call fetchGists method in SearchGist
     }
   };
+
+  
 
   return (
     <Box
