@@ -116,14 +116,20 @@ function App() {
               Available Gists
             </Typography>
             <Divider sx={{ marginBottom: 2, borderColor: '#4fc3f7' }} />
-            <SearchGist ref={searchGistRef} onGistSelect={handleGistSelect} /> {/* Ref to refresh */}
+            <SearchGist
+              ref={searchGistRef}
+              onGistSelect={handleGistSelect}
+              onGistDeleted={refreshGists} // Refresh on gist deletion
+            />
           </Paper>
 
           {/* Gist Content Section */}
           {selectedGist ? (
             <GistContent gist={selectedGist} /> // Conditionally render GistContent
           ) : (
-            <Typography sx={{ color: '#ffffff', marginTop: 4 }}>Select a gist to view its content</Typography> // Fallback if no gist is selected
+            <Typography sx={{ color: '#ffffff', marginTop: 4 }}>
+              Select a gist to view its content
+            </Typography> // Fallback if no gist is selected
           )}
         </Grid>
       </Grid>

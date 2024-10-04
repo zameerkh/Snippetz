@@ -11,12 +11,13 @@ import {
   ListItemText,
   Autocomplete,
   TextField,
+  IconButton
 } from '@mui/material';
-import { ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
-import { getGists, getGistById } from '../services/gistService';
+import { ExpandMore as ExpandMoreIcon, Delete as DeleteIcon } from '@mui/icons-material';
+import { getGists, getGistById, deleteGist } from '../services/gistService';
 
 const SearchGist = forwardRef((props, ref) => {
-  const { onGistSelect } = props;
+  const { onGistSelect, onGistDeleted } = props;
   const [gists, setGists] = useState([]);
   const [filteredGists, setFilteredGists] = useState([]); // For filtered gists
   const [groupedGists, setGroupedGists] = useState({});
@@ -48,6 +49,17 @@ const SearchGist = forwardRef((props, ref) => {
       onGistSelect(detailedGist);
     } catch (err) {
       setError('Error fetching gist details');
+    }
+  };
+
+  // Delete a gist by ID
+  const handleDeleteGist = async (gistId) => {
+    try {
+      await deleteGist(gistId);
+      onGistDeleted(); // Trigger any additional behavior on deletion
+      fetchGists(); // Refresh the list after deletion
+    } catch (err) {
+      setError('Error deleting gist');
     }
   };
 
@@ -148,15 +160,21 @@ const SearchGist = forwardRef((props, ref) => {
             <AccordionDetails>
               <List>
                 {groupedGists[tag].map((gist) => (
-                  <ListItem
-                    key={gist.id}
-                    button
-                    onClick={() => fetchGistDetails(gist.id)}
-                  >
+                  <ListItem key={gist.id} button onClick={() => fetchGistDetails(gist.id)}>
                     <ListItemText
                       primary={gist.description || 'No description'}
                       secondary={`Files: ${Object.keys(gist.files).join(', ')}`}
                     />
+                    <IconButton
+                      edge="end"
+                      aria-label="delete"
+                      onClick={(e) => {
+                        e.stopPropagation(); // Prevent gist selection when deleting
+                        handleDeleteGist(gist.id); // Delete the gist
+                      }}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
                   </ListItem>
                 ))}
               </List>
