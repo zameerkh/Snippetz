@@ -1,16 +1,22 @@
-import React,{ useRef } from 'react';
-import { Box, Typography, Grid, Paper, Divider, Button } from '@mui/material';
-import CreateSnippet from './components/CreateSnippet';  
-import SearchGist from './components/SearchGist';        
-import DeleteAllGists from './components/DeleteAllGists'; 
+import React, { useState, useRef } from 'react';
+import { Box, Typography, Grid, Paper, Divider } from '@mui/material';
+import CreateSnippet from './components/CreateSnippet';
+import SearchGist from './components/SearchGist';
+import DeleteAllGists from './components/DeleteAllGists';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import DeleteSweepIcon from '@mui/icons-material/DeleteSweep';
+import GistContent from './components/GistContent';
 
 function App() {
-
   const searchGistRef = useRef(null);
+  const [selectedGist, setSelectedGist] = useState(null);
 
-  // Function to trigger refresh in SearchGist
+  // Function to handle gist selection
+  const handleGistSelect = (gist) => {
+    setSelectedGist(gist); // Set the selected gist
+  };
+
+  // Function to trigger refresh in SearchGist after creating a new gist
   const handleGistCreated = () => {
     if (searchGistRef.current) {
       searchGistRef.current.fetchGists(); // Trigger refresh in SearchGist
@@ -63,7 +69,7 @@ function App() {
               Create a New Gist
             </Typography>
             <Divider sx={{ marginBottom: 2, borderColor: '#81c784' }} />
-             <CreateSnippet onGistCreated={handleGistCreated} />
+            <CreateSnippet onGistCreated={handleGistCreated} />
           </Paper>
 
           {/* Paper for Delete All Gists Section */}
@@ -90,7 +96,7 @@ function App() {
           </Paper>
         </Grid>
 
-        {/* Right Column (Search Gists) */}
+        {/* Right Column (Search Gists and Gist Content) */}
         <Grid item xs={12} md={8}>
           {/* Paper for Search Gists Section */}
           <Paper
@@ -110,8 +116,15 @@ function App() {
               Available Gists
             </Typography>
             <Divider sx={{ marginBottom: 2, borderColor: '#4fc3f7' }} />
-            <SearchGist />
+            <SearchGist ref={searchGistRef} onGistSelect={handleGistSelect} />
           </Paper>
+
+          {/* Gist Content Section */}
+          {selectedGist ? (
+            <GistContent gist={selectedGist} /> // Conditionally render GistContent
+          ) : (
+            <Typography sx={{ color: '#ffffff', marginTop: 4 }}>Select a gist to view its content</Typography> // Fallback if no gist is selected
+          )}
         </Grid>
       </Grid>
     </Box>

@@ -62,15 +62,10 @@ export const searchGists = async (searchTerm) => {
   }
 };
 
-// Fetch a specific Gist by ID to get its content
+// New function to get full gist details by ID
 export const getGistById = async (gistId) => {
-  try {
-    const response = await api.get(`/gists/${gistId}`);
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching Gist by ID', error);
-    throw error;
-  }
+  const response = await api.get(`/gists/${gistId}`);
+  return response.data;
 };
 
 // Delete a single gist by ID
