@@ -10,12 +10,17 @@ const api = axios.create({
   },
 });
 
-export const createGist = async (snippetContent, description, isPublic = false) => {
+// Updated createGist to accept filename for specifying the language
+export const createGist = async (snippetContent, description, filename, isPublic = false) => {
+  if (!filename) {
+    throw new Error('Filename is required, and it should include the correct extension (e.g., snippet.js).');
+  }
+
   const gistData = {
     description,
     public: isPublic,
     files: {
-      'snippet.js': {
+      [filename]: {
         content: snippetContent,
       },
     },
@@ -30,6 +35,7 @@ export const createGist = async (snippetContent, description, isPublic = false) 
   }
 };
 
+// Fetch all Gists
 export const getGists = async () => {
   try {
     const response = await api.get('/gists');

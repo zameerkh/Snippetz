@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { List, ListItem, ListItemText, Box } from '@mui/material';
 import { getGists } from '../services/gistService';
 
 const SnippetList = () => {
@@ -17,18 +18,30 @@ const SnippetList = () => {
   }, []);
 
   return (
-    <div>
+    <Box
+      sx={{
+        maxWidth: '500px',
+        padding: 3,
+        borderRadius: 1,
+        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+        backgroundColor: 'white',
+      }}
+    >
       <h2>My Code Snippets</h2>
-      <ul>
+      <List>
         {gists.map((gist) => (
-          <li key={gist.id}>
-            <a href={gist.html_url} target="_blank" rel="noopener noreferrer">
-              {gist.description || 'No Description'}
-            </a>
-          </li>
+          <ListItem key={gist.id}>
+            <ListItemText
+              primary={
+                <a href={gist.html_url} target="_blank" rel="noopener noreferrer">
+                  {gist.description || 'No Description'}
+                </a>
+              }
+            />
+          </ListItem>
         ))}
-      </ul>
-    </div>
+      </List>
+    </Box>
   );
 };
 

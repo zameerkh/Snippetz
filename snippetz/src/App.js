@@ -1,6 +1,7 @@
 import React from 'react';
 import CreateSnippet from './components/CreateSnippet';
 import SnippetList from './components/SnippetList';
+import './styles.css'; // Importing the custom CSS file
 
 const App = () => {
   return (
