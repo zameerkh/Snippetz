@@ -1,21 +1,25 @@
 import React, { useState } from 'react';
-import { Button, CircularProgress, Box, Typography } from '@mui/material';
+import { Button, CircularProgress, Box, Typography, Snackbar, Alert } from '@mui/material';
 import { getGists, deleteGist } from '../services/gistService';
 
-const DeleteAllGists = () => {
+const DeleteAllGists = ({ onGistsDeleted }) => { // Add the prop here
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState('');
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [snackbarSeverity, setSnackbarSeverity] = useState('success');
 
   // Function to delete all gists
   const handleDeleteAll = async () => {
     setLoading(true);
-    setMessage('');
+    setSnackbarMessage('');
 
     try {
       // Fetch all gists
       const gists = await getGists();
       if (gists.length === 0) {
-        setMessage('No gists available to delete.');
+        setSnackbarMessage('No gists available to delete.');
+        setSnackbarSeverity('info'); // Set the severity to 'info'
+        setOpenSnackbar(true); // Open the Snackbar
         setLoading(false);
         return;
       }
@@ -25,12 +29,28 @@ const DeleteAllGists = () => {
         await deleteGist(gist.id);
       }
 
-      setMessage('All gists have been deleted successfully.');
+      setSnackbarMessage('All gists have been deleted successfully.');
+      setSnackbarSeverity('success'); // Set the severity to 'success'
+      setOpenSnackbar(true); // Open the Snackbar
+
+      if (onGistsDeleted) {
+        onGistsDeleted(); // Call the callback to refresh the SearchGist component
+      }
     } catch (error) {
-      setMessage('An error occurred while deleting gists.');
+      setSnackbarMessage('An error occurred while deleting gists.');
+      setSnackbarSeverity('error'); // Set the severity to 'error'
+      setOpenSnackbar(true); // Open the Snackbar
     } finally {
       setLoading(false);
     }
+  };
+
+  // Close the Snackbar
+  const handleCloseSnackbar = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setOpenSnackbar(false);
   };
 
   return (
@@ -44,6 +64,7 @@ const DeleteAllGists = () => {
         color="secondary"
         onClick={handleDeleteAll}
         disabled={loading}
+        sx={{ marginBottom: 2 }}
       >
         Delete All Gists
       </Button>
@@ -55,12 +76,16 @@ const DeleteAllGists = () => {
         </Box>
       )}
 
-      {/* Display result message */}
-      {message && (
-        <Typography color="error" sx={{ marginTop: 2 }}>
-          {message}
-        </Typography>
-      )}
+      {/* Snackbar for success/error notifications */}
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+      >
+        <Alert onClose={handleCloseSnackbar} severity={snackbarSeverity} sx={{ width: '100%' }}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };

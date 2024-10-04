@@ -16,10 +16,10 @@ function App() {
     setSelectedGist(gist); // Set the selected gist
   };
 
-  // Function to trigger refresh in SearchGist after creating a new gist
-  const handleGistCreated = () => {
+  // Function to trigger refresh in SearchGist after creating or deleting a gist
+  const refreshGists = () => {
     if (searchGistRef.current) {
-      searchGistRef.current.fetchGists(); // Trigger refresh in SearchGist
+      searchGistRef.current.fetchGists(); // Call fetchGists method in SearchGist
     }
   };
 
@@ -69,7 +69,7 @@ function App() {
               Create a New Gist
             </Typography>
             <Divider sx={{ marginBottom: 2, borderColor: '#81c784' }} />
-            <CreateSnippet onGistCreated={handleGistCreated} />
+            <CreateSnippet onGistCreated={refreshGists} /> {/* Refresh on gist creation */}
           </Paper>
 
           {/* Paper for Delete All Gists Section */}
@@ -92,7 +92,7 @@ function App() {
               Delete All Gists
             </Typography>
             <Divider sx={{ marginBottom: 2, borderColor: '#f44336' }} />
-            <DeleteAllGists />
+            <DeleteAllGists onGistsDeleted={refreshGists} /> {/* Refresh on deleting gists */}
           </Paper>
         </Grid>
 
@@ -116,7 +116,7 @@ function App() {
               Available Gists
             </Typography>
             <Divider sx={{ marginBottom: 2, borderColor: '#4fc3f7' }} />
-            <SearchGist ref={searchGistRef} onGistSelect={handleGistSelect} />
+            <SearchGist ref={searchGistRef} onGistSelect={handleGistSelect} /> {/* Ref to refresh */}
           </Paper>
 
           {/* Gist Content Section */}

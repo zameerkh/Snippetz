@@ -1,19 +1,25 @@
 import React, { useState } from 'react';
-import { TextField, Button, Box, Typography, Paper, Divider, Select, MenuItem, InputLabel, FormControl } from '@mui/material';
+import { TextField, Button, Box, Typography, Paper, Divider, Select, MenuItem, InputLabel, FormControl, Snackbar, Alert } from '@mui/material';
 import { createGist } from '../services/gistService';
 
-const languageOptions = ['JavaScript', 'Python', 'Ruby', 'Go', 'Java', 'C#', 'HTML', 'CSS', 'Other'];
+const languageOptions = ['JavaScript', 'Python', 'Ruby', 'Go', 'Java', 'C#', 'HTML', 'CSS', 'CSharp', 'Splunk', 'Other'];
 
 const CreateSnippet = ({ onGistCreated }) => {
   const [snippet, setSnippet] = useState('');
   const [description, setDescription] = useState('');
   const [filename, setFilename] = useState('');
   const [language, setLanguage] = useState(''); // State to hold the selected language
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [snackbarSeverity, setSnackbarSeverity] = useState('success');
 
+  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!filename) {
-      alert('Please specify a filename with the correct extension');
+      setSnackbarMessage('Please specify a filename with the correct extension');
+      setSnackbarSeverity('error');
+      setOpenSnackbar(true); // Trigger the Snackbar
       return;
     }
 
@@ -25,11 +31,23 @@ const CreateSnippet = ({ onGistCreated }) => {
         tags: [language], // Add selected language as a tag
       };
       await createGist(gist);
-      alert('Snippet saved to Gist!');
+      setSnackbarMessage('Snippet saved to Gist!');
+      setSnackbarSeverity('success');
+      setOpenSnackbar(true); // Trigger the Snackbar
       onGistCreated(); // Trigger refresh in SearchGist
     } catch (error) {
-      alert('Error creating Gist');
+      setSnackbarMessage('Error creating Gist');
+      setSnackbarSeverity('error');
+      setOpenSnackbar(true); // Trigger the Snackbar
     }
+  };
+
+  // Close the Snackbar
+  const handleCloseSnackbar = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setOpenSnackbar(false);
   };
 
   return (
@@ -132,6 +150,17 @@ const CreateSnippet = ({ onGistCreated }) => {
           Create Gist
         </Button>
       </Box>
+
+      {/* Snackbar for success/error notifications */}
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+      >
+        <Alert onClose={handleCloseSnackbar} severity={snackbarSeverity} sx={{ width: '100%' }}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </Paper>
   );
 };
