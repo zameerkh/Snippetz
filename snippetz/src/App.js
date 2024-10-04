@@ -1,16 +1,30 @@
 import React from 'react';
+import { Box, Typography } from '@mui/material';
 import CreateSnippet from './components/CreateSnippet';
-import SnippetList from './components/SnippetList';
-import './styles.css'; // Importing the custom CSS file
+import SearchGist from './components/SearchGist'; // Ensure the correct import
 
-const App = () => {
+function App() {
   return (
-    <div>
-      <h1>Code Snippet Manager</h1>
-      <CreateSnippet />
-      <SnippetList />
-    </div>
+    <Box sx={{ padding: 4 }}>
+      <Typography variant="h3" gutterBottom align="center">
+        Gist Manager
+      </Typography>
+
+      <Box sx={{ marginBottom: 4 }}>
+        <Typography variant="h5" gutterBottom>
+          Create a New Gist
+        </Typography>
+        <CreateSnippet />
+      </Box>
+
+      <Box>
+        <Typography variant="h5" gutterBottom>
+          Available Gists
+        </Typography>
+        <SearchGist /> {/* Ensure this component is being rendered */}
+      </Box>
+    </Box>
   );
-};
+}
 
 export default App;

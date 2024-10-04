@@ -45,3 +45,30 @@ export const getGists = async () => {
     throw error;
   }
 };
+
+// Search Gists by language or search string (approximate match)
+export const searchGists = async (searchTerm) => {
+  try {
+    const gists = await getGists();
+    return gists.filter((gist) => {
+      // Search in the description for language or search string
+      const description = gist.description || '';
+      const searchRegex = new RegExp(searchTerm, 'i'); // Case-insensitive search
+      return searchRegex.test(description);
+    });
+  } catch (error) {
+    console.error('Error searching Gists', error);
+    throw error;
+  }
+};
+
+// Fetch a specific Gist by ID to get its content
+export const getGistById = async (gistId) => {
+  try {
+    const response = await api.get(`/gists/${gistId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching Gist by ID', error);
+    throw error;
+  }
+};
