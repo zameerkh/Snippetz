@@ -1,4 +1,4 @@
-import React from 'react';
+import React,{ useRef } from 'react';
 import { Box, Typography, Grid, Paper, Divider, Button } from '@mui/material';
 import CreateSnippet from './components/CreateSnippet';  
 import SearchGist from './components/SearchGist';        
@@ -7,6 +7,16 @@ import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import DeleteSweepIcon from '@mui/icons-material/DeleteSweep';
 
 function App() {
+
+  const searchGistRef = useRef(null);
+
+  // Function to trigger refresh in SearchGist
+  const handleGistCreated = () => {
+    if (searchGistRef.current) {
+      searchGistRef.current.fetchGists(); // Trigger refresh in SearchGist
+    }
+  };
+
   return (
     <Box
       sx={{
@@ -53,7 +63,7 @@ function App() {
               Create a New Gist
             </Typography>
             <Divider sx={{ marginBottom: 2, borderColor: '#81c784' }} />
-            <CreateSnippet />
+             <CreateSnippet onGistCreated={handleGistCreated} />
           </Paper>
 
           {/* Paper for Delete All Gists Section */}

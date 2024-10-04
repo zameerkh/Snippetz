@@ -1,46 +1,51 @@
-import React, { useState, useEffect } from 'react';
-import { Box, CircularProgress, Typography, List, ListItem, ListItemText } from '@mui/material';
+import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
+import { List, ListItem, ListItemText, Box, Typography, CircularProgress } from '@mui/material';
 import { getGists } from '../services/gistService';
 
-const SearchGist = () => {
-  console.log('SearchGist component loaded'); // Log to check if component is loaded
-
+const SearchGist = forwardRef((props, ref) => {
   const [gists, setGists] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const fetchGists = async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const fetchedGists = await getGists();
+      setGists(fetchedGists);
+    } catch (err) {
+      setError('Error fetching gists');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useImperativeHandle(ref, () => ({
+    fetchGists,
+  }));
+
   useEffect(() => {
-    getGists()
-      .then((fetchedGists) => {
-        setGists(fetchedGists);
-        setLoading(false);
-      })
-      .catch((err) => {
-        setError('Error fetching gists');
-        setLoading(false);
-      });
+    fetchGists();
   }, []);
 
   return (
-    <Box sx={{ padding: 2 }}>
-      <Typography variant="h5">Available Gists</Typography>
-
+    <Box>
       {loading && <CircularProgress />}
       {error && <Typography color="error">{error}</Typography>}
-
-      {!loading && !error && gists.length > 0 && (
+      {!loading && !error && gists.length > 0 ? (
         <List>
           {gists.map((gist) => (
             <ListItem key={gist.id}>
-              <ListItemText primary={gist.description || 'No description available'} />
+              <ListItemText primary={gist.description || 'No description'} />
             </ListItem>
           ))}
         </List>
+      ) : (
+        <Typography>No gists available</Typography>
       )}
-
-      {!loading && !error && gists.length === 0 && <Typography>No gists available</Typography>}
     </Box>
   );
-};
+});
 
 export default SearchGist;
