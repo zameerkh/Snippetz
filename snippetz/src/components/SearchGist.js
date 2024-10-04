@@ -1,6 +1,6 @@
 import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
 import { List, ListItem, ListItemText, Box, Typography, CircularProgress } from '@mui/material';
-import { getGists, getGistById } from '../services/gistService'; // Import getGistById to fetch full gist details
+import { getGists, getGistById } from '../services/gistService'; // Import getGistById
 
 const SearchGist = forwardRef((props, ref) => {
   const { onGistSelect } = props; // Destructure the onGistSelect prop
@@ -43,25 +43,27 @@ const SearchGist = forwardRef((props, ref) => {
     fetchGists();
   }, []);
 
+  if (loading) {
+    return <CircularProgress />;
+  }
+
+  if (error) {
+    return <Typography color="error">{error}</Typography>;
+  }
+
   return (
     <Box>
-      {loading && <CircularProgress />}
-      {error && <Typography color="error">{error}</Typography>}
-      {!loading && !error && gists.length > 0 ? (
-        <List>
-          {gists.map((gist) => (
-            <ListItem
-              key={gist.id}
-              button
-              onClick={() => fetchGistDetails(gist.id)} // Fetch full gist details when clicked
-            >
-              <ListItemText primary={gist.description || 'No description'} />
-            </ListItem>
-          ))}
-        </List>
-      ) : (
-        <Typography>No gists available</Typography>
-      )}
+      <List>
+        {gists.map((gist) => (
+          <ListItem
+            key={gist.id}
+            button
+            onClick={() => fetchGistDetails(gist.id)} // Fetch full gist details when clicked
+          >
+            <ListItemText primary={gist.description || 'No description'} />
+          </ListItem>
+        ))}
+      </List>
     </Box>
   );
 });
