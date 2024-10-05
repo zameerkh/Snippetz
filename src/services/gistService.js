@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Set your GitHub token here
-const GITHUB_TOKEN = process.env.REACT_APP_GITHUB_TOKEN;
+const GITHUB_TOKEN = process.env.REACT_APP_GITHUB_PAT;
 
 // Check if the GitHub token is loaded
 if (!GITHUB_TOKEN) {
@@ -27,7 +27,7 @@ export const createGist = async ({ snippet, description, filename, tags }) => {
       },
     },
   };
-
+ console.log('Ctoken is ', process.env.REACT_APP_GITHUB_PAT);
   try {
     console.log('Creating gist with data:', gistData);
     const response = await api.post('/gists', gistData);
