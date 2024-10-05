@@ -1,60 +1,82 @@
 import React, { useState, useRef } from 'react';
-import { Box, Typography, Grid, Paper, Divider } from '@mui/material';
+import { Box, Typography, Grid, Paper, Divider, Drawer, List, ListItem, ListItemIcon, ListItemText } from '@mui/material';
 import CreateSnippet from './components/CreateSnippet';
 import SearchGist from './components/SearchGist';
 import DeleteAllGists from './components/DeleteAllGists';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import DeleteSweepIcon from '@mui/icons-material/DeleteSweep';
+import ListAltIcon from '@mui/icons-material/ListAlt';
 import GistContent from './components/GistContent';
 
 function App() {
   const searchGistRef = useRef(null);
   const [selectedGist, setSelectedGist] = useState(null);
+  const [activeSection, setActiveSection] = useState('gists'); // Track active section
 
   // Function to handle gist selection
   const handleGistSelect = (gist) => {
     setSelectedGist(gist); // Set the selected gist
   };
 
+  // Function to handle gist deletion
+  const handleGistDelete = () => {
+    setSelectedGist(null); // Clear the selected gist
+    refreshGists(); // Refresh the gists list in SearchGist
+  };
   // Function to trigger refresh in SearchGist after creating or deleting a gist
   const refreshGists = () => {
-    console.log('Refreshing gists...');
     if (searchGistRef.current) {
-      console.log('Refreshing gists going to refresh...');
       searchGistRef.current.fetchGists(); // Call fetchGists method in SearchGist
     }
   };
 
-  
+  // Sidebar items
+  const sidebarItems = [
+    { text: 'Create a Gist', icon: <AddCircleOutlineIcon />, section: 'create' },
+    { text: 'Delete All Gists', icon: <DeleteSweepIcon />, section: 'delete' },
+    { text: 'Available Gists', icon: <ListAltIcon />, section: 'gists' },
+  ];
 
   return (
-    <Box
-      sx={{
-        flexGrow: 1,
-        padding: 4,
-        backgroundColor: '#1c1e21', // Dark background
-        minHeight: '100vh',
-      }}
-    >
-      {/* App Header */}
-      <Typography
-        variant="h3"
-        gutterBottom
-        align="center"
+    <Box sx={{ display: 'flex', minHeight: '100vh', backgroundColor: '#1c1e21' }}>
+      {/* Sidebar Navigation */}
+      <Drawer
+        variant="permanent"
         sx={{
-          color: '#fff', // White color for contrast
-          fontWeight: 600,
-          marginBottom: 6,
-          letterSpacing: '2px',
+          width: 240,
+          flexShrink: 0,
+          '& .MuiDrawer-paper': {
+            width: 240,
+            boxSizing: 'border-box',
+            backgroundColor: '#2d2f33',
+            color: '#fff',
+          },
         }}
       >
-        Gist Manager
-      </Typography>
+        <Typography variant="h4" sx={{ padding: 2, textAlign: 'center', color: '#4fc3f7', fontWeight: 600 }}>
+          Snippetz
+        </Typography>
+        <Divider />
+        <List>
+          {sidebarItems.map((item) => (
+            <ListItem button key={item.text} onClick={() => setActiveSection(item.section)}>
+              <ListItemIcon sx={{ color: '#81c784' }}>{item.icon}</ListItemIcon>
+              <ListItemText primary={item.text} />
+            </ListItem>
+          ))}
+        </List>
+      </Drawer>
 
-      <Grid container spacing={4}>
-        {/* Left Column (Create and Delete Gists) */}
-        <Grid item xs={12} md={4}>
-          {/* Paper for Create Snippet Section */}
+      {/* Main Content Area */}
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          padding: 4,
+          backgroundColor: '#1c1e21',
+        }}
+      >
+        {activeSection === 'create' && (
           <Paper
             elevation={5}
             sx={{
@@ -62,10 +84,6 @@ function App() {
               backgroundColor: '#2d2f33',
               color: '#ffffff',
               borderRadius: 2,
-              transition: '0.3s ease',
-              '&:hover': {
-                boxShadow: '0 8px 16px rgba(0,0,0,0.3)',
-              },
             }}
           >
             <Typography variant="h5" gutterBottom sx={{ color: '#81c784', fontWeight: 500 }}>
@@ -73,10 +91,11 @@ function App() {
               Create a New Gist
             </Typography>
             <Divider sx={{ marginBottom: 2, borderColor: '#81c784' }} />
-            <CreateSnippet onGistCreated={refreshGists} /> {/* Refresh on gist creation */}
+            <CreateSnippet onGistCreated={refreshGists} />
           </Paper>
+        )}
 
-          {/* Paper for Delete All Gists Section */}
+        {activeSection === 'delete' && (
           <Paper
             elevation={5}
             sx={{
@@ -84,11 +103,6 @@ function App() {
               backgroundColor: '#2d2f33',
               color: '#ffffff',
               borderRadius: 2,
-              marginTop: 4,
-              transition: '0.3s ease',
-              '&:hover': {
-                boxShadow: '0 8px 16px rgba(0,0,0,0.3)',
-              },
             }}
           >
             <Typography variant="h5" gutterBottom sx={{ color: '#f44336', fontWeight: 500 }}>
@@ -96,47 +110,49 @@ function App() {
               Delete All Gists
             </Typography>
             <Divider sx={{ marginBottom: 2, borderColor: '#f44336' }} />
-            <DeleteAllGists onGistsDeleted={refreshGists} /> {/* Refresh on deleting gists */}
+            <DeleteAllGists onGistsDeleted={refreshGists} />
           </Paper>
-        </Grid>
+        )}
 
-        {/* Right Column (Search Gists and Gist Content) */}
-        <Grid item xs={12} md={8}>
-          {/* Paper for Search Gists Section */}
-          <Paper
-            elevation={5}
-            sx={{
-              padding: 4,
-              backgroundColor: '#2d2f33',
-              color: '#ffffff',
-              borderRadius: 2,
-              transition: '0.3s ease',
-              '&:hover': {
-                boxShadow: '0 8px 16px rgba(0,0,0,0.3)',
-              },
-            }}
-          >
-            <Typography variant="h5" gutterBottom sx={{ color: '#4fc3f7', fontWeight: 500 }}>
-              Available Gists
-            </Typography>
-            <Divider sx={{ marginBottom: 2, borderColor: '#4fc3f7' }} />
-            <SearchGist
-              ref={searchGistRef}
-              onGistSelect={handleGistSelect}
-              onGistDeleted={refreshGists} // Refresh on gist deletion
-            />
-          </Paper>
+        {activeSection === 'gists' && (
+          <Grid container spacing={4}>
+            <Grid item xs={12} md={8}>
+              <Paper
+                elevation={5}
+                sx={{
+                  padding: 4,
+                  backgroundColor: '#2d2f33',
+                  color: '#ffffff',
+                  borderRadius: 2,
+                  transition: '0.3s ease',
+                  '&:hover': {
+                    boxShadow: '0 8px 16px rgba(0,0,0,0.3)',
+                  },
+                }}
+              >
+                <Typography variant="h5" gutterBottom sx={{ color: '#4fc3f7', fontWeight: 500 }}>
+                  Available Gists
+                </Typography>
+                <Divider sx={{ marginBottom: 2, borderColor: '#4fc3f7' }} />
+                <SearchGist
+                  ref={searchGistRef}
+                  onGistSelect={handleGistSelect}
+                  onGistDeleted={handleGistDelete}
+                />
+              </Paper>
 
-          {/* Gist Content Section */}
-          {selectedGist ? (
-            <GistContent gist={selectedGist} /> // Conditionally render GistContent
-          ) : (
-            <Typography sx={{ color: '#ffffff', marginTop: 4 }}>
-              Select a gist to view its content
-            </Typography> // Fallback if no gist is selected
-          )}
-        </Grid>
-      </Grid>
+              {/* Gist Content Section */}
+              {selectedGist ? (
+                <GistContent gist={selectedGist} />
+              ) : (
+                <Typography sx={{ color: '#ffffff', marginTop: 4 }}>
+                  Select a gist to view its content
+                </Typography>
+              )}
+            </Grid>
+          </Grid>
+        )}
+      </Box>
     </Box>
   );
 }

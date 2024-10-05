@@ -31,6 +31,7 @@ const SearchGist = forwardRef((props, ref) => {
     setError(null);
 
     try {
+      console.log('Fetching gists...inside fetchGists');
       const fetchedGists = await getGists();
       setGists(fetchedGists);
       setFilteredGists(fetchedGists); // Initialize filtered gists with all gists
