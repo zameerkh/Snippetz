@@ -26,13 +26,13 @@ const DeleteAllGists = ({ onGistsDeleted }) => { // Add the prop here
 
       // Iterate and delete each gist
       for (const gist of gists) {
+        console.log(`Deleting gist with ID: ${gist.id}`);
         await deleteGist(gist.id);
       }
 
       setSnackbarMessage('All gists have been deleted successfully.');
       setSnackbarSeverity('success'); // Set the severity to 'success'
       setOpenSnackbar(true); // Open the Snackbar
-
       if (onGistsDeleted) {
         onGistsDeleted(); // Call the callback to refresh the SearchGist component
       }
