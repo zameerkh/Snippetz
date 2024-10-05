@@ -2,13 +2,13 @@ import React, { useState } from 'react';
 import { TextField, Button, Box, Typography, Paper, Divider, Select, MenuItem, InputLabel, FormControl, Snackbar, Alert } from '@mui/material';
 import { createGist } from '../services/gistService';
 
-const languageOptions = ['JavaScript', 'Python', 'Ruby', 'Go', 'Java', 'C#', 'HTML', 'CSS', 'CSharp', 'Splunk', 'Other'];
+const languageOptions = ['JavaScript', 'Python', 'Ruby', 'Go', 'Java', 'C#', 'HTML', 'CSS', 'Splunk', 'Other'];
 
 const CreateSnippet = ({ onGistCreated }) => {
   const [snippet, setSnippet] = useState('');
   const [description, setDescription] = useState('');
   const [filename, setFilename] = useState('');
-  const [language, setLanguage] = useState(''); // State to hold the selected language
+  const [language, setLanguage] = useState('C#'); // Default to C#
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState('success');
@@ -125,6 +125,7 @@ const CreateSnippet = ({ onGistCreated }) => {
               backgroundColor: '#ffffff',
               borderRadius: 1,
             }}
+            defaultValue="C#" // Default value set to C#
           >
             {languageOptions.map((lang) => (
               <MenuItem key={lang} value={lang}>

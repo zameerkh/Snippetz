@@ -18,6 +18,11 @@ function App() {
     setSelectedGist(gist); // Set the selected gist
   };
 
+  // Function to handle gist deletion
+  const handleGistDelete = () => {
+    setSelectedGist(null); // Clear the selected gist
+    refreshGists(); // Refresh the gists list in SearchGist
+  };
   // Function to trigger refresh in SearchGist after creating or deleting a gist
   const refreshGists = () => {
     if (searchGistRef.current) {
@@ -132,7 +137,7 @@ function App() {
                 <SearchGist
                   ref={searchGistRef}
                   onGistSelect={handleGistSelect}
-                  onGistDeleted={refreshGists}
+                  onGistDeleted={handleGistDelete}
                 />
               </Paper>
 
